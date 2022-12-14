@@ -1,0 +1,5 @@
+Enter-PSSession -ComputerName SRVSEB -Credential SEB\Administrator #prise en charge du serveur à distance
+Import-Module GroupPolicy # Une fois GPMC installé, vous pouvez charger le module de stratégie de groupe.
+Get-Command –Module GroupPolicy # Pour obtenir une liste des applets de commande disponibles dans le module.
+Get-GPO -All
+New-GPO #Créer une GPO
