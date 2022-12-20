@@ -42,3 +42,7 @@ New-GPO # Créer une GPO.
         # Permet de linker vers l'OU, a changer le lien "Target"
         Set-GPLink -Name $GPOname -Target "?" -LinkEnabled Yes
 Projet
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn581922(v=ws.11)
+https://devblogs.microsoft.com/scripting/hey-scripting-guy-how-can-i-use-group-policy-cmdlets-to-back-up-and-restore-group-policy-objects/
+https://learn.microsoft.com/en-us/powershell/module/grouppolicy/set-gplink?view=windowsserver2022-ps
+https://learn.microsoft.com/en-us/powershell/module/grouppolicy/new-gpo?view=windowsserver2022-ps
