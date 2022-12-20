@@ -30,4 +30,15 @@ Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Window
 Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequencyEnabled -Type DWORD -value 1
 
 #link the new GPO
-New-GPLink -Name $GPOName -Target $TargetOU | out-null 
+New-GPLink -Name $GPOName -Target $TargetOU | out-null gg
+
+
+
+
+
+#GPO 1 (général : font d'écran)
+$GPOname = 'FontEcran'
+New-GPO -Name $GPOname 
+Set-GPPrefRegistryValue -Name $GPOname -Action Update -Context Computer -Key 'HKCC\Software\Microsoft\Internet Explorer\Main' -Type DWord  -ValueName 'UseSWRender' -Value 1 | out-null
+
+
