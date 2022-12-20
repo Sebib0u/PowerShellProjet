@@ -41,4 +41,4 @@ New-GPO # Créer une GPO.
          Set-GPPrefRegistryValue -Name $GPOname -Action Update -Context Computer -Key 'HKCC\Software\Microsoft\Internet Explorer\Main' -Type DWord  -ValueName 'UseSWRender' -Value 1 | out-null
         # Permet de linker vers l'OU, a changer le lien "Target"
         Set-GPLink -Name $GPOname -Target "?" -LinkEnabled Yes
-
+Projet
