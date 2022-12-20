@@ -29,8 +29,6 @@ New-GPO # Créer une GPO.
     Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequency -Type DWORD -value 4
     Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequencyEnabled -Type DWORD -value 1
 
-    #link the new GPO
-    New-GPLink -Name $GPOName -Target $TargetOU | out-null gg
 
 
 
