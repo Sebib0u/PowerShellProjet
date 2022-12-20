@@ -1,5 +1,33 @@
 Enter-PSSession -ComputerName SRVSEB -Credential SEB\Administrator #prise en charge du serveur à distance
 Import-Module GroupPolicy # Une fois GPMC installé, vous pouvez charger le module de stratégie de groupe.
 Get-Command –Module GroupPolicy # Pour obtenir une liste des applets de commande disponibles dans le module.
-Get-GPO -All
-New-GPO #Créer une GPO
+Get-GPO -All # M'affiche toutes les GPO de mon serveur.
+New-GPO # Créer une GPO.
+
+#Structure de la création de GPO#
+
+# load required modules
+Import-Module ActiveDirectory
+Import-Module GroupPolicy
+
+#define variables
+$GPOName       = 'GPO created by PowerShell'
+$defaultNC     = ( [ADSI]"LDAP://RootDSE" ).defaultNamingContext.Value
+#$TargetOU      = 'OU=Serveurs,' + $defaultNC
+$TargetOU      = $defaultNC
+
+#create new GPO shell
+$GPO = New-GPO -Name $GPOName
+
+#Pose d'éléments pour modifier des clés de registre par GPO
+Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKCC\Software\Microsoft\Internet Explorer\Main' -Type DWord  -ValueName 'UseSWRender' -Value 1 | out-null
+Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKLM\Software\Citrix\Dazzle' -Type String   -ValueName 'AllowAddStore' -Value 'A' | out-null
+Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKLM\Software\CitrixAuthManager' -Type String   -ValueName 'ConnectionSecurityMode' -Value 'Any' | out-null
+
+#Pose d'éléments pour modifier des paramètres par GPO
+Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName AUOptions -Type DWORD -value 2
+Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequency -Type DWORD -value 4
+Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequencyEnabled -Type DWORD -value 1
+
+#link the new GPO
+New-GPLink -Name $GPOName -Target $TargetOU | out-null 
