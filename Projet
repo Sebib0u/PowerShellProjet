@@ -38,11 +38,8 @@ New-GPO # Créer une GPO.
     $GPOname = 'FontEcran'
     New-GPO -Name $GPOname 
         # A change rpour font d'écran. Voir si possibilité de ne pas passer par la table de registre
-         Set-GPPrefRegistryValue -Name $GPOname -Action Update -Context Computer -Key 'HKCC\Software\Microsoft\Internet Explorer\Main' -Type DWord  -ValueName 'UseSWRender' -Value 1 | out-null
+        Set-GpRegistryValue -Name $GPOname -key "HKEY_CURRENT_USER\Control Panel\Desktop" -ValueName "Wallpaper" -type string -value "C:\Wallpeper\image.jpg"
         # Permet de linker vers l'OU, a changer le lien "Target"
-        Set-GPLink -Name $GPOname -Target "?" -LinkEnabled Yes
-Projet
-https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn581922(v=ws.11)
-https://devblogs.microsoft.com/scripting/hey-scripting-guy-how-can-i-use-group-policy-cmdlets-to-back-up-and-restore-group-policy-objects/
-https://learn.microsoft.com/en-us/powershell/module/grouppolicy/set-gplink?view=windowsserver2022-ps
-https://learn.microsoft.com/en-us/powershell/module/grouppolicy/new-gpo?view=windowsserver2022-ps
+        Set-GPLink -Name $GPOname -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
+        rundll32.exe user32.dll, UpdatePerUserSystemParameters
+        Gpupdate /force
