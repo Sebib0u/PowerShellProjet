@@ -4,42 +4,24 @@ Get-Command –Module GroupPolicy # Pour obtenir une liste des applets de comman
 Get-GPO -All # M'affiche toutes les GPO de mon serveur.
 New-GPO # Créer une GPO.
 
-#Structure de la création de GPO#
-
-    # load required modules
-    Import-Module ActiveDirectory
-    Import-Module GroupPolicy
-
-    #define variables
-    $GPOName       = 'GPO created by PowerShell'
-    $defaultNC     = ( [ADSI]"LDAP://RootDSE" ).defaultNamingContext.Value
-    #$TargetOU      = 'OU=Serveurs,' + $defaultNC
-    $TargetOU      = $defaultNC
-
-    #create new GPO shell
-    $GPO = New-GPO -Name $GPOName
-
-    #Pose d'éléments pour modifier des clés de registre par GPO
-    Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKCC\Software\Microsoft\Internet Explorer\Main' -Type DWord  -ValueName 'UseSWRender' -Value 1 | out-null
-    Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKLM\Software\Citrix\Dazzle' -Type String   -ValueName 'AllowAddStore' -Value 'A' | out-null
-    Set-GPPrefRegistryValue -Name $GPOName -Action Update -Context Computer -Key 'HKLM\Software\CitrixAuthManager' -Type String   -ValueName 'ConnectionSecurityMode' -Value 'Any' | out-null
-
-    #Pose d'éléments pour modifier des paramètres par GPO
-    Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName AUOptions -Type DWORD -value 2
-    Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequency -Type DWORD -value 4
-    Set-GPRegistryValue -Name $GPOName -key "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" -ValueName DetectionFrequencyEnabled -Type DWORD -value 1
-
-
-
-
-
-
 #GPO 1 (général : font d'écran)
-    $GPOname = 'FontEcran'
+    $GPOname = 'Wallpaper'
     New-GPO -Name $GPOname 
         # A change rpour font d'écran. Voir si possibilité de ne pas passer par la table de registre
         Set-GpRegistryValue -Name $GPOname -key "HKEY_CURRENT_USER\Control Panel\Desktop" -ValueName "Wallpaper" -type string -value "C:\Wallpeper\image.jpg"
         # Permet de linker vers l'OU, a changer le lien "Target"
         Set-GPLink -Name $GPOname -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
-        rundll32.exe user32.dll, UpdatePerUserSystemParameters
         Gpupdate /force
+
+#GPO 2 (général : Verrouiller le commpte si 3 échecs mdp)
+    $numberOfErrors = Read-Host -Prompt "A partir de combien d'erreurs voulez vou sbloquer l'utilisateur ? "
+    $TimeOfBan = Read-Host -Prompt "Pendant combien de temps ? "
+    $GPO2name = 'locking'
+    $SecurityEdit= $GPO.GetSecuritySettings()
+    $SecurityEdit.AccountLockoutThreshold = $numberOfErrors
+    $SecurityEdit.AccountLockoutDuration = $TimeOfBan
+    Set-GPLink -Name $GPO2name -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
+    Gpupdate /force
+
+#GPO 3 (Installer des logiciels)
+    $GPO3name = 'Installer'
