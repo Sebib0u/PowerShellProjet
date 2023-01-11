@@ -1,4 +1,15 @@
-#GPO 1 (général : font d'écran)
+<#
+.SYNOPSIS
+Création et gestion de GPO
+.DESCRIPTION
+Ce script permet de créer trois GPO (), d'exporté leur rapport dans un dossier, de faire une backup général si besoin
+#>
+
+
+#GPO 1 (général : font d'écran) | Crée une GPO qui permet de changer de font d'écrant.
+    $reponse1 = Read-Host -Prompt "Voulez-vous attribuer un font d'écran Lié à une OU spécifique ? (Oui/Non)"
+    if ($reponse1 -like 'Oui')
+    {
     $GPOname = 'Wallpaper'
     New-GPO -Name $GPOname 
         # A change rpour font d'écran. Voir si possibilité de ne pas passer par la table de registre
@@ -6,26 +17,57 @@
         # Permet de linker vers l'OU, a changer le lien "Target"
         New-GPLink -Name $GPOname -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
         Gpupdate /force
+    }
 
-#GPO 2 (général : Verrouiller le commpte si 3 échecs mdp)
+    #GPO 2 (général : Verrouiller le commpte si 3 échecs mdp)
     Import-Module   GroupPolicy
     $numberOfErrors = Read-Host -Prompt "A partir de combien d'erreurs voulez vous bloquer l'utilisateur ? "
     $TimeOfBan = Read-Host -Prompt "Pendant combien de temps (secondes) ? "
     $GPO2name = 'locking'
     New-GPO -Name $GPO2name 
     $LockoutKey = "System\AccountLockoutPolicy"
-    Set-GPRegistryValue -Name $GPO2name.DisplayName -Key $LockoutKey -ValueName "LockoutThreshold" -Type DWORD -Value $numberOfErrors
+    Set-GPRegistryValue -Name locking.DisplayName -Key $LockoutKey -ValueName "LockoutThreshold" -Type DWORD -Value $numberOfErrors
     New-GPLink -Name $GPO2name -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
-    Set-GPRegistryValue -Name $GPO2name.DisplayName -Key $LockoutKey -ValueName "LockoutDuration" -Type DWORD -Value $TimeOfBan
-    Set-GPRegistryValue -Name $GPO2name.DisplayName -Key $LockoutKey -ValueName "ResetLockoutCount" -Type DWORD -Value $TimeOfBan
+    Set-GPRegistryValue -Name locking.DisplayName -Key $LockoutKey -ValueName "LockoutDuration" -Type DWORD -Value $TimeOfBan
+    Set-GPRegistryValue -Name locking.DisplayName -Key $LockoutKey -ValueName "ResetLockoutCount" -Type DWORD -Value $TimeOfBan
     Gpupdate /force
+
 
 #GPO 3 (politique de mdp)¨
 import-module GroupPolicy
 $GPO3name = 'PolitiqueChange'
 New-GPO -Name $GPO3name 
 $GPO = Get-GPO -name $GPO3name
-New-GPRegistryValue -Name $GPO.DisplayName -key "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -ValueName "MinimumPasswordLength" -Type DWord -Value 14
+Set-GPRegistryValue -Name $GPO.DisplayName -key "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -ValueName "MinimumPasswordLength" -Type DWord -Value 14
 New-GPLink -Name $GPO3name -Target "ou=general,dc=seb,dc=com" -LinkEnabled Yes
 Gpupdate /force
+
+# Demande si besoin de créer un rapport. si oui, demande qu'elle extension est désiré (HTML ou XML) puis crée un dossier nommé report et pour finir inserera le rapport dedans.  
+$rapport = Read-Host -Prompt "Voulez-vous créer un rapport ? (Oui/Non)"
+if ($rapport -like 'Oui')
+{
+    $nom = Read-Host -Prompt "Inserez le nom de votre GPO : "
+    $Format = Read-Host -Prompt "Inserez le format (Html/Xml) : "
+    if($Format -like 'Html')
+    {
+        New-Item "C:\Report" -itemType Directory
+        Get-GPOReport -Name $nom -ReportType Html -Path c:\Report\Report.html
+    }
+    else
+    {
+        New-Item "C:\Report" -itemType Directory
+        Get-GPOReport -Name $nom -ReportType Xml -Path c:\Report\Report.xml
+    }
+}
+
+#Demande si un backup de toutes les GPO est nésessaire. Si oui, Crée un dossier nommé Backup et l'inserera dedans.
+$reponse2 = Read-Host -Prompt "Voulez-vous faire une backup de vos GPO ? (Oui/Non)"
+
+if ($reponse2 -like 'Oui')
+{
+    New-Item "C:\GPOBackup" -itemType Directory
+    Get-GPO -All | Backup-GPO -Path C:\GPOBackup\ -Comment "$(Get-Date)"
+}
+
+
 
