@@ -20,11 +20,7 @@
     Set-GPRegistryValue -Name $GPO2name.DisplayName -Key $LockoutKey -ValueName "ResetLockoutCount" -Type DWORD -Value $TimeOfBan
     Gpupdate /force
 
-#GPO 3 (Installer des logiciels)
-    $GPO3name = 'Installer'
-
-
-#GPO 4 (politique de mdp)¨
+#GPO 3 (politique de mdp)¨
 import-module GroupPolicy
 $GPO3name = 'PolitiqueChange'
 New-GPO -Name $GPO3name 
