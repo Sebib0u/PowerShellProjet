@@ -71,3 +71,47 @@ if ($reponse2 -like 'Oui')
 
 
 
+
+
+
+
+
+
+
+
+
+tu es un ingénieur informatique spécialisé dans la technique system 
+
+Non, je suis un modèle de langage entraîné par OpenAI. Je peux comprendre et générer du texte en utilisant des informations que j'ai apprises à partir de vastes corpus de données. Je peux répondre à des questions sur de nombreux sujets, y compris l'informatique et les systèmes.
+
+
+
+
+sebastienbrun706@gmail.com
+non tu as tord
+Je suis désolé si j'ai mal compris votre question. S'il vous plaît précisez comment je peux vous aider.
+
+
+
+
+'sebastienbrun706@gmail.com
+tu es un ingénieur informatique spécialisé dans la technique system. Aide moi a créer un dossier partagé nommé wallpaper via powershell. Ce dossier dois se trouver dans la racine c et dois pouvoir être accessible à tous. 
+Voici comment créer un dossier partagé nommé "wallpaper" dans la racine C en utilisant PowerShell:
+
+Ouvrez PowerShell en tant qu'administrateur en cliquant sur Démarrer, saisissant "PowerShell" dans la barre de recherche, et en cliquant sur "Windows PowerShell" en haut des résultats de recherche.
+
+Tapez la commande suivante pour créer un nouveau dossier "wallpaper" dans la racine C:
+
+Copy code
+New-Item -ItemType Directory -Path "C:\wallpaper"
+Pour partager ce dossier, utilisez la commande suivante :
+Copy code
+New-SmbShare -Name "wallpaper" -Path "C:\wallpaper" -FullAccess "Everyone"
+Cela créera un partage SMB avec le nom "wallpaper" et donnera un accès complet à tous les utilisateurs.
+
+'Vous pouvez vérifier que le partage a bien été créé en utilisant la commande suivante :
+'Copy code'
+'Get-SmbShare'
+'Il devrait afficher le partage "wallpaper" avec les paramètres configurés précédemment.''
+
+'Note : Il est important de noter que ces commandes doivent être effectuées en tant qu'administrateur pour fonctionner correctement.'
